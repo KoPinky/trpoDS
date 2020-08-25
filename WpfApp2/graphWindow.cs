@@ -29,7 +29,7 @@ namespace WpfApp2
             chart.ChartAreas["Default"].AxisX.Minimum = 0;
             chart.ChartAreas["Default"].AxisY.MajorGrid.Interval = 1;
             chart.ChartAreas["Default"].AxisY.Minimum = 0;
-
+            string ResAngleList = "";
 
 
             foreach (var segment in db.segments)
@@ -50,7 +50,7 @@ namespace WpfApp2
             foreach (var rel in db.Relations)
             {
                 var seg = db.segments.Where(w => w.id == rel.segment_ID).FirstOrDefault<segments>();
-                double x, y;
+                
 
                 
 
@@ -64,7 +64,7 @@ namespace WpfApp2
                 double XM = Convert.ToDouble(Convert.ToDouble(seg.x1) + relation * Convert.ToDouble(seg.x2))/(1 + relation);
                 double YM = Convert.ToDouble(Convert.ToDouble(seg.y1) + relation * Convert.ToDouble(seg.y2)) / (1 + relation);
 
-                MessageBox.Show("Rel = " + relation + "xM = " + Convert.ToString(XM)+ "\nyM = " + Convert.ToString(YM));
+                
 
                 chart.Series["Points"].ChartArea = "Default";
                 chart.Series["Points"].ChartType = SeriesChartType.Point;
@@ -91,12 +91,17 @@ namespace WpfApp2
                 //Второй вариант дает угол в диапазоне ±π
                 var seg1 = db.segments.Where(w => w.id == ang.segment1).FirstOrDefault<segments>();
                 var seg2 = db.segments.Where(w => w.id == ang.segment2).FirstOrDefault<segments>();
-
-                double dx1 = seg1.x1 - seg1.x2;
-                double dy1 = y1 - y2
-                double dx2 = x3 - x2
-                double dy2 = y3 - ;
-                FindEquation(seg1);
+                double x1 = Math.Abs(seg1.x1 - seg1.x2);
+                double x2 = Math.Abs(seg2.x1 - seg2.x2);
+                double y1 = Math.Abs(seg1.y1 - seg1.y2);
+                double y2 = Math.Abs(seg2.y1 - seg2.y2);
+                double CosA = (x1 * x2 + y1 * y2)/(Math.Sqrt(Math.Pow(x1, 2) + Math.Pow(y1, 2))* Math.Sqrt(Math.Pow(x2, 2) + Math.Pow(y2, 2)));
+                double ACosA = Math.Acos(CosA);
+                ResAngleList = ResAngleList + "(" + seg1.x1 + ";" + seg1.y1 + ")" + "(" + seg1.x2 + ";" + seg1.y2 + ")" + "\u2220" + "(" + seg2.x1 + ";" + seg2.y1 + ")" + "(" + seg2.x2 + ";" + seg2.y2 + ")"
+                    + " = " + (ACosA * 180 / Math.PI);
+                AngleList.Text = ResAngleList;
+               
+                
             }
             
             
@@ -108,6 +113,11 @@ namespace WpfApp2
             k[1] = seg.x2 - seg.x1;
             k[2] = (seg.x1 * seg.y2) - (seg.x2 * seg.y1);
             return k;
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
