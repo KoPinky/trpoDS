@@ -32,16 +32,7 @@ namespace WpfApp2
         {
             try
             {
-                segments NewSeg = new segments()
-                {
-                    x1 = Convert.ToInt32(x1.Text),
-                    x2 = Convert.ToInt32(x2.Text),
-                    y1 = Convert.ToInt32(y1.Text),
-                    y2 = Convert.ToInt32(y2.Text),
-                    Name = ("(" + x1.Text + ";" + y1.Text + ")(" + x2.Text + ";" + y2.Text + ")")
-                };
-                db.segments.Add(NewSeg);
-                db.SaveChanges();
+                AddVector(x1.Text, x2.Text, y1.Text, y2.Text);
                 OutPutList();
 
                 x1.Clear(); x2.Clear(); y1.Clear(); y2.Clear();
@@ -56,19 +47,25 @@ namespace WpfApp2
 
         }
 
+        public void AddVector(string x1,string x2,string y1, string y2)
+        {
+            segments NewSeg = new segments()
+            {
+                x1 = Convert.ToInt32(x1),
+                x2 = Convert.ToInt32(x2),
+                y1 = Convert.ToInt32(y1),
+                y2 = Convert.ToInt32(y2),
+                Name = ("(" + x1 + ";" + y1 + ")(" + x2 + ";" + y2 + ")")
+            };
+            db.segments.Add(NewSeg);
+            db.SaveChanges();
+        }
+
         private void AddAngle_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var Segment1 = db.segments.Where(s => s.Name == AngCB1.Text).First<segments>();
-                var Segment2 = db.segments.Where(s => s.Name == AngCB2.Text).First<segments>();
-                angles NewAng = new angles()
-                {
-                    segment1 = Segment1.id,
-                    segment2 = Segment2.id
-                };
-                db.angles.Add(NewAng);
-                db.SaveChanges();
+                AddAngle(AngCB1.Text, AngCB2.Text);
                 OutPutList();
             }
             catch
@@ -79,19 +76,25 @@ namespace WpfApp2
             
         }
 
+        public void AddAngle(string AngCB1, string AngCB2)
+        {
+            var Segment1 = db.segments.Where(s => s.Name == AngCB1).First<segments>();
+            var Segment2 = db.segments.Where(s => s.Name == AngCB2).First<segments>();
+            angles NewAng = new angles()
+            {
+                segment1 = Segment1.id,
+                segment2 = Segment2.id
+            };
+            db.angles.Add(NewAng);
+            db.SaveChanges();
+           
+        }
+
         private void AddRelation_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                var SegmentF = db.segments.Where(s => s.Name == RelCB1.Text).First<segments>();
-                Relations NewRel = new Relations()
-                {
-                    relation1 = Convert.ToInt32(RelTB_1.Text),
-                    relation2 = Convert.ToInt32(RelTB_2.Text),
-                    segment_ID = Convert.ToInt32(SegmentF.id)
-                };
-                db.Relations.Add(NewRel);
-                db.SaveChanges();
+                AddRelation(RelCB1.Text, RelTB_1.Text, RelTB_2.Text);
                 OutPutList();
 
                 RelTB_1.Clear(); RelTB_2.Clear();
@@ -100,6 +103,19 @@ namespace WpfApp2
             {
                 MessageBox.Show("Заполните поля ввода!!!");
             }
+        }
+
+        public void AddRelation(string RelCB1, string RelTB_1, string RelTB_2)
+        {
+            var SegmentF = db.segments.Where(s => s.Name == RelCB1).First<segments>();
+            Relations NewRel = new Relations()
+            {
+                relation1 = Convert.ToInt32(RelTB_1),
+                relation2 = Convert.ToInt32(RelTB_2),
+                segment_ID = Convert.ToInt32(SegmentF.id)
+            };
+            db.Relations.Add(NewRel);
+            db.SaveChanges();
         }
 
         private void OutPutList()
