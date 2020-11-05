@@ -18,26 +18,68 @@ namespace WpfApp2
         public graphWindow()
         {
             InitializeComponent();
+            OutPutList();
+        }
+
+       public void OutPutList()
+        {
+            var vector = db.segments.ToList();
+            foreach(var p in vector)
+            {
+                VectorsBox.Items.Add(p.Name);
+            }
         }
 
 
         TRPOPREntities1 db = new TRPOPREntities1();
 
-        private void chart1_Click(object sender, EventArgs e)
+        private void Start(object sender, EventArgs e)
         {
+            
             chart.ChartAreas.Add(new ChartArea("Default"));
-            chart.ChartAreas["Default"].AxisX.MajorGrid.Interval = 1;
+
+           
+            chart.ChartAreas["Default"].AxisX.MajorGrid.Interval = 5;
             chart.ChartAreas["Default"].AxisX.Minimum = 0;
-            chart.ChartAreas["Default"].AxisY.MajorGrid.Interval = 1;
+            
+            chart.ChartAreas["Default"].AxisY.MajorGrid.Interval = 5;
             chart.ChartAreas["Default"].AxisY.Minimum = 0;
+            
+
+            Drowing();
+
+
+
+        }
+
+        public void Rotate(double angle, segments seg1, double X, double Y)
+        {
+            /*
+             * X = x * cos(alpha) — y * sin(alpha);
+             * Y = x * sin(alpha) + y * cos(alpha);
+            */
+            
+                double angleRadian =angle * Math.PI / 180;
+            double OX1 = seg1.x1, OY1 = seg1.y1, OX2 = seg1.x2, OY2 = seg1.y2 ;
+            seg1.x1 = (OX1 - X )* Math.Cos(angleRadian) - (OY1 - Y) * Math.Sin(angleRadian) + X;
+            seg1.y1 = (OX1 - X) * Math.Sin(angleRadian) + (OY1 - Y) * Math.Cos(angleRadian) + Y;
+            seg1.x2 = (OX2 - X) * Math.Cos(angleRadian) - (OY2 - Y) * Math.Sin(angleRadian) + X;
+            seg1.y2 = (OX2 - X) * Math.Sin(angleRadian) + (OY2 - Y) * Math.Cos(angleRadian) + Y;
+
+            
+            
+        }
+
+        public void Drowing()
+        {
             string ResAngleList = "";
-
-
             foreach (var segment in db.segments)
             {
                 chart.Series.Add(new Series(segment.Name));
                 chart.Series[segment.Name].ChartArea = "Default";
                 chart.Series[segment.Name].ChartType = SeriesChartType.Line;
+                chart.Series[segment.Name].BorderWidth = 3;
+                
 
                 // добавим данные линии
                 double[] axisXData = new double[] { segment.x1, segment.x2 };
@@ -51,9 +93,9 @@ namespace WpfApp2
             foreach (var rel in db.Relations)
             {
                 var seg = db.segments.Where(w => w.id == rel.segment_ID).FirstOrDefault<segments>();
-                
 
-                
+
+
 
 
                 //    double length = Math.Sqrt(Math.Pow((Math.Abs(seg.x1 - seg.x2)), 2) + Math.Pow((Math.Abs(seg.y1 - seg.y2)), 2));
@@ -62,10 +104,10 @@ namespace WpfApp2
                 //double xRel =  (Math.Abs(seg.x1 - seg.x2)) / sumRel * rel.relation1;
                 //double yRel =  Math.Sqrt(Math.Pow(LeftRel, 2) - Math.Pow(xRel, 2));
                 double relation = Convert.ToDouble(Convert.ToDouble(rel.relation1) / Convert.ToDouble(rel.relation2));
-                double XM = Convert.ToDouble(Convert.ToDouble(seg.x1) + relation * Convert.ToDouble(seg.x2))/(1 + relation);
+                double XM = Convert.ToDouble(Convert.ToDouble(seg.x1) + relation * Convert.ToDouble(seg.x2)) / (1 + relation);
                 double YM = Convert.ToDouble(Convert.ToDouble(seg.y1) + relation * Convert.ToDouble(seg.y2)) / (1 + relation);
 
-                
+
 
                 chart.Series["Points"].ChartArea = "Default";
                 chart.Series["Points"].ChartType = SeriesChartType.Point;
@@ -76,26 +118,26 @@ namespace WpfApp2
 
 
 
-            foreach(var ang in db.angles)
+            foreach (var ang in db.angles)
             {
 
                 var seg1 = db.segments.Where(w => w.id == ang.segment1).FirstOrDefault<segments>();
                 var seg2 = db.segments.Where(w => w.id == ang.segment2).FirstOrDefault<segments>();
-                if (intersection(seg1, seg2))
+                if (Intersection(seg1, seg2))
                 {
                     ResAngleList = ResAngleList + "(" + seg1.x1 + ";" + seg1.y1 + ")" + "(" + seg1.x2 + ";" + seg1.y2 + ")" + "\u2220" + "(" + seg2.x1 + ";" + seg2.y1 + ")" + "(" + seg2.x2 + ";" + seg2.y2 + ")"
-                        + " = " + (VectorAng(seg1, seg2) * 180 / Math.PI);
+                        + " = " + (VectorAng(seg1, seg2) * 180 / Math.PI) + "\r\n";
                     AngleList.Text = ResAngleList;
                 }
                 else
                 {
-                    ResAngleList = ResAngleList + "(" + seg1.x1 + ";" + seg1.y1 + ")" + "(" + seg1.x2 + ";" + seg1.y2 + ")" + "\u2220" + "(" + seg2.x1 + ";" + seg2.y1 + ")" + "(" + seg2.x2 + ";" + seg2.y2 + ")"
-                        + " не пересекаются " ;
+                    ResAngleList = ResAngleList +  "(" + seg1.x1 + ";" + seg1.y1 + ")" + "(" + seg1.x2 + ";" + seg1.y2 + ")" + "\u2220" + "(" + seg2.x1 + ";" + seg2.y1 + ")" + "(" + seg2.x2 + ";" + seg2.y2 + ")"
+                        + " не пересекаются \r\n";
                 }
-                
+
             }
-            
-            
+
+
         }
 
         //расчет угла между отрезками
@@ -111,21 +153,14 @@ namespace WpfApp2
                 return ACosA;
             
         }
-        public double[] FindEquation(segments seg)
-        {
-            double[] k = new double[3];
-            k[0] = seg.y1 - seg.y2;
-            k[1] = seg.x2 - seg.x1;
-            k[2] = (seg.x1 * seg.y2) - (seg.x2 * seg.y1);
-            return k;
-        }
 
-        public bool intersection(segments seg1, segments seg2)
+
+        public bool Intersection(segments seg1, segments seg2)
         {
-            //Шаг 2.Если x1 ≥ x2 то меняем между собой значения x1 и x2 и y1 и y2
-            //Шаг 3.Если x3 ≥ x4 то меняем между собой значения x3 и x4 и y3 и y4;
-            double x1, x2, x3, x4, y1, y2, y3, y4, k1, k2;
-            if(seg1.x2 <= seg1.x1)
+
+            double x1, x2, x3, x4, y1, y2, y3, y4;
+            double Ua, Ub, numerator_a, numerator_b, denominator;
+            if (seg1.x2 <= seg1.x1)
             {
                 x1 = seg1.x2;
                 x2 = seg1.x1;
@@ -153,38 +188,42 @@ namespace WpfApp2
                 y3 = seg2.y1;
                 y4 = seg2.y2;
             }
-            /*Шаг 4.Проверяем, равны ли между собой у2 и у1,
-            если у2 = у1 да, то принимаем k1 = 0 иначе
-            Определяем угловой коэффициент в уравнении прямой:
-            k1 = (у2 - у1) / (x2 - x1) */
-            if (y2 == y1) k1 = 0;
+            denominator = (y4 - y3) * (x1 - x2) - (x4 - x3) * (y1 - y2);
+            if (denominator == 0)
+            {
+                if ((x1 * y2 - x2 * y1) * (x4 - x3) - (x3 * y4 - x4 * y3) * (x2 - x1) == 0 && (x1 * y2 - x2 * y1) * (y4 - y3) - (x3 * y4 - x4 * y3) * (y2 - y1) == 0)
+                    return true;
+                else return false;
+            }
             else
             {
-                k1 = (y2 - y1) / (x2 - x1);
-            }
-            /*Шаг 5.Проверяем, равны ли между собой у3 и у4,
-            если у3 = у4 да, то принимаем k2 = 0 иначе
-            Определяем угловой коэффициент в уравнении прямой:
-            k2 = (у4 - у3) / (x4 - x3)*/
-            if (y3 == y4) k2 = 0;
-            else
-            {
-                k2 = (y4 - y3) / (x4 - x3);
-            }
+                numerator_a = (x4 - x2) * (y4 - y3) - (x4 - x3) * (y4 - y2);
+                numerator_b = (x1 - x2) * (y4 - y2) - (x4 - x2) * (y1 - y2);
+                Ua = numerator_a / denominator;
+                Ub = numerator_b / denominator;
+                if (Ua >= 0 && Ua <= 1 && Ub >= 0 && Ub <= 1) return true;
+                else return false;
+                
 
-            /*Шаг 6. Проверим отрезки на параллельность.
-            Если k1 = k2 , то прямые параллельны и отрезки пересекаться не могут. Решение задачи прекращаем.*/
-            if (k1 == k2) return false;
-            /*
-            Шаг 7. Вычисляем значения свободных переменных
-            Определяем свободные члены в уравнении прямой:
-            */
-            else
-            {
-                return true;
             }
-            
-
+           
         }
+
+        private void Rebuilding_Click(object sender, EventArgs e)
+        {
+            chart.Series.Clear();
+            var seg1 = db.segments.Where(w => w.Name == VectorsBox.Text).FirstOrDefault<segments>();
+            try
+            {
+                Rotate(Convert.ToDouble(AngleBox.Text), seg1, Convert.ToDouble(XPoint.Text), Convert.ToDouble(YPoint.Text));
+            }
+            catch
+            {
+                MessageBox.Show("Не все поля заполненны корректно!");
+            }
+            Drowing();
+        }
+
+       
     }
 }

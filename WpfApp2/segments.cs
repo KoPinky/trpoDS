@@ -23,10 +23,10 @@ namespace WpfApp2
         }
     
         public int id { get; set; }
-        public int x1 { get; set; }
-        public int x2 { get; set; }
-        public int y1 { get; set; }
-        public int y2 { get; set; }
+        public double x1 { get; set; }
+        public double x2 { get; set; }
+        public double y1 { get; set; }
+        public double y2 { get; set; }
         public string Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
