@@ -27,7 +27,7 @@ namespace WpfApp2
             ClearDB();
             OutPutList();
         }
-
+        //отроботка кнопки добавление векторов
         private void AddVector_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -46,7 +46,7 @@ namespace WpfApp2
 
 
         }
-
+        //Добавление вектора
         public void AddVector(string x1,string x2,string y1, string y2)
         {
             segments NewSeg = new segments()
@@ -60,7 +60,7 @@ namespace WpfApp2
             db.segments.Add(NewSeg);
             db.SaveChanges();
         }
-
+        //отроботка кнопки добавления угла
         private void AddAngle_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -75,7 +75,7 @@ namespace WpfApp2
 
             
         }
-
+        //добаление угла
         public void AddAngle(string AngCB1, string AngCB2)
         {
             var Segment1 = db.segments.Where(s => s.Name == AngCB1).First<segments>();
@@ -89,7 +89,7 @@ namespace WpfApp2
             db.SaveChanges();
            
         }
-
+        //отроботка кнопки добавления соотношения
         private void AddRelation_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -104,7 +104,7 @@ namespace WpfApp2
                 MessageBox.Show("Заполните поля ввода!!!");
             }
         }
-
+        //добавление соотношения
         public void AddRelation(string RelCB1, string RelTB_1, string RelTB_2)
         {
             var SegmentF = db.segments.Where(s => s.Name == RelCB1).First<segments>();
@@ -117,7 +117,7 @@ namespace WpfApp2
             db.Relations.Add(NewRel);
             db.SaveChanges();
         }
-
+        //Обновление листов с данными
         private void OutPutList()
         {
             vectorsList.ItemsSource = db.segments.Select(s => s.Name).ToList();
@@ -129,7 +129,7 @@ namespace WpfApp2
             AngCB2.ItemsSource = db.segments.Select(s => s.Name).ToList();
 
         }
-
+        //удаление всех данных из бд перед работой
         private void ClearDB()
         {
             db.Database.ExecuteSqlCommand("TRUNCATE TABLE [Relations]");
@@ -138,12 +138,8 @@ namespace WpfApp2
             db.Database.ExecuteSqlCommand("DBCC CHECKIDENT('segments', RESEED, 0)");
         }
 
-        private void ClearDate_Click(object sender, RoutedEventArgs e)
-        {
-            ClearDB();
-            OutPutList();
-        }
 
+        //переход на страницу с графиками
         private void PlotGraph_Click(object sender, RoutedEventArgs e)
         {
 

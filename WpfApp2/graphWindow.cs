@@ -15,61 +15,60 @@ namespace WpfApp2
 {
     public partial class graphWindow : Form
     {
+        TRPOPREntities1 db = new TRPOPREntities1();
+        
         public graphWindow()
         {
             InitializeComponent();
             OutPutList();
         }
-
-       public void OutPutList()
+        //заполнение комбобокса значениями
+        public void OutPutList()
         {
             var vector = db.segments.ToList();
-            foreach(var p in vector)
+            foreach (var p in vector)
             {
                 VectorsBox.Items.Add(p.Name);
             }
         }
-
-
-        TRPOPREntities1 db = new TRPOPREntities1();
-
+        //определение координатной прямой
         private void Start(object sender, EventArgs e)
         {
-            
+
             chart.ChartAreas.Add(new ChartArea("Default"));
 
-           
+
             chart.ChartAreas["Default"].AxisX.MajorGrid.Interval = 5;
             chart.ChartAreas["Default"].AxisX.Minimum = 0;
-            
+
             chart.ChartAreas["Default"].AxisY.MajorGrid.Interval = 5;
             chart.ChartAreas["Default"].AxisY.Minimum = 0;
-            
+
 
             Drowing();
 
 
 
         }
-
+        //пересчет координат вектора, в зависимоти от угла и точки поворота
         public void Rotate(double angle, segments seg1, double X, double Y)
         {
             /*
              * X = x * cos(alpha) — y * sin(alpha);
              * Y = x * sin(alpha) + y * cos(alpha);
             */
-            
-                double angleRadian =angle * Math.PI / 180;
-            double OX1 = seg1.x1, OY1 = seg1.y1, OX2 = seg1.x2, OY2 = seg1.y2 ;
-            seg1.x1 = (OX1 - X )* Math.Cos(angleRadian) - (OY1 - Y) * Math.Sin(angleRadian) + X;
+
+            double angleRadian = angle * Math.PI / 180;
+            double OX1 = seg1.x1, OY1 = seg1.y1, OX2 = seg1.x2, OY2 = seg1.y2;
+            seg1.x1 = (OX1 - X) * Math.Cos(angleRadian) - (OY1 - Y) * Math.Sin(angleRadian) + X;
             seg1.y1 = (OX1 - X) * Math.Sin(angleRadian) + (OY1 - Y) * Math.Cos(angleRadian) + Y;
             seg1.x2 = (OX2 - X) * Math.Cos(angleRadian) - (OY2 - Y) * Math.Sin(angleRadian) + X;
             seg1.y2 = (OX2 - X) * Math.Sin(angleRadian) + (OY2 - Y) * Math.Cos(angleRadian) + Y;
 
-            
-            
-        }
 
+
+        }
+        //отрисовка всех графиков, меток
         public void Drowing()
         {
             string ResAngleList = "";
@@ -79,7 +78,7 @@ namespace WpfApp2
                 chart.Series[segment.Name].ChartArea = "Default";
                 chart.Series[segment.Name].ChartType = SeriesChartType.Line;
                 chart.Series[segment.Name].BorderWidth = 3;
-                
+
 
                 // добавим данные линии
                 double[] axisXData = new double[] { segment.x1, segment.x2 };
@@ -103,16 +102,12 @@ namespace WpfApp2
                 //double LeftRel = length / sumRel * rel.relation1;
                 //double xRel =  (Math.Abs(seg.x1 - seg.x2)) / sumRel * rel.relation1;
                 //double yRel =  Math.Sqrt(Math.Pow(LeftRel, 2) - Math.Pow(xRel, 2));
-                double relation = Convert.ToDouble(Convert.ToDouble(rel.relation1) / Convert.ToDouble(rel.relation2));
-                double XM = Convert.ToDouble(Convert.ToDouble(seg.x1) + relation * Convert.ToDouble(seg.x2)) / (1 + relation);
-                double YM = Convert.ToDouble(Convert.ToDouble(seg.y1) + relation * Convert.ToDouble(seg.y2)) / (1 + relation);
-
-
+                
 
                 chart.Series["Points"].ChartArea = "Default";
                 chart.Series["Points"].ChartType = SeriesChartType.Point;
-                XData.Add(XM);
-                YData.Add(YM);
+                XData.Add(Reletion(rel, seg, "x"));
+                YData.Add(Reletion(rel, seg, "y"));
                 chart.Series["Points"].Points.DataBindXY(XData, YData);
             }
 
@@ -131,7 +126,7 @@ namespace WpfApp2
                 }
                 else
                 {
-                    ResAngleList = ResAngleList +  "(" + seg1.x1 + ";" + seg1.y1 + ")" + "(" + seg1.x2 + ";" + seg1.y2 + ")" + "\u2220" + "(" + seg2.x1 + ";" + seg2.y1 + ")" + "(" + seg2.x2 + ";" + seg2.y2 + ")"
+                    ResAngleList = ResAngleList + "(" + seg1.x1 + ";" + seg1.y1 + ")" + "(" + seg1.x2 + ";" + seg1.y2 + ")" + "\u2220" + "(" + seg2.x1 + ";" + seg2.y1 + ")" + "(" + seg2.x2 + ";" + seg2.y2 + ")"
                         + " не пересекаются \r\n";
                 }
 
@@ -139,7 +134,24 @@ namespace WpfApp2
 
 
         }
+        //точка соотношения
+        public double Reletion(Relations rel, segments seg, string k)
+        {
+            double relation = Convert.ToDouble(Convert.ToDouble(rel.relation1) / Convert.ToDouble(rel.relation2));
+            double XM = Convert.ToDouble(Convert.ToDouble(seg.x1) + relation * Convert.ToDouble(seg.x2)) / (1 + relation);
+            double YM = Convert.ToDouble(Convert.ToDouble(seg.y1) + relation * Convert.ToDouble(seg.y2)) / (1 + relation);
 
+            if (k == "x")
+            {
+                return XM;
+            }
+            else if (k == "y")
+            {
+                return YM;
+            }
+            else
+                return 0;
+        }
         //расчет угла между отрезками
         public double VectorAng(segments seg1, segments seg2)
         {
@@ -153,8 +165,7 @@ namespace WpfApp2
                 return ACosA;
             
         }
-
-
+        //определяет наличие или отсутствие пересечений
         public bool Intersection(segments seg1, segments seg2)
         {
 
@@ -208,7 +219,7 @@ namespace WpfApp2
             }
            
         }
-
+        //перестройка(поворот) графиков
         private void Rebuilding_Click(object sender, EventArgs e)
         {
             chart.Series.Clear();
