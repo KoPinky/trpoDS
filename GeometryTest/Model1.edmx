@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="Хранилище TRPOPRModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="angles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="segment1" Type="int" Nullable="false" />
+          <Property Name="segment2" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Relations">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="segment_ID" Type="int" />
+          <Property Name="relation1" Type="int" Nullable="false" />
+          <Property Name="relation2" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="segments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="x1" Type="float" Nullable="false" />
+          <Property Name="x2" Type="float" Nullable="false" />
+          <Property Name="y1" Type="float" Nullable="false" />
+          <Property Name="y2" Type="float" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="20" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_angles_segments">
+          <End Role="segments" Type="Self.segments" Multiplicity="1" />
+          <End Role="angles" Type="Self.angles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="segments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="angles">
+              <PropertyRef Name="segment1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_angles_segments1">
+          <End Role="segments" Type="Self.segments" Multiplicity="1" />
+          <End Role="angles" Type="Self.angles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="segments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="angles">
+              <PropertyRef Name="segment2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Relations_segments">
+          <End Role="segments" Type="Self.segments" Multiplicity="0..1" />
+          <End Role="Relations" Type="Self.Relations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="segments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Relations">
+              <PropertyRef Name="segment_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище TRPOPRModelContainer">
+          <EntitySet Name="angles" EntityType="Self.angles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Relations" EntityType="Self.Relations" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="segments" EntityType="Self.segments" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_angles_segments" Association="Self.FK_angles_segments">
+            <End Role="segments" EntitySet="segments" />
+            <End Role="angles" EntitySet="angles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_angles_segments1" Association="Self.FK_angles_segments1">
+            <End Role="segments" EntitySet="segments" />
+            <End Role="angles" EntitySet="angles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Relations_segments" Association="Self.FK_Relations_segments">
+            <End Role="segments" EntitySet="segments" />
+            <End Role="Relations" EntitySet="Relations" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="TRPOPRModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="angles">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="segment1" Type="Int32" Nullable="false" />
+          <Property Name="segment2" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="segments" Relationship="Self.FK_angles_segments" FromRole="angles" ToRole="segments" />
+          <NavigationProperty Name="segments1" Relationship="Self.FK_angles_segments1" FromRole="angles" ToRole="segments" />
+        </EntityType>
+        <EntityType Name="Relations">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="segment_ID" Type="Int32" />
+          <Property Name="relation1" Type="Int32" Nullable="false" />
+          <Property Name="relation2" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="segments" Relationship="Self.FK_Relations_segments" FromRole="Relations" ToRole="segments" />
+        </EntityType>
+        <EntityType Name="segments">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="x1" Type="Double" Nullable="false" />
+          <Property Name="x2" Type="Double" Nullable="false" />
+          <Property Name="y1" Type="Double" Nullable="false" />
+          <Property Name="y2" Type="Double" Nullable="false" />
+          <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="angles" Relationship="Self.FK_angles_segments" FromRole="segments" ToRole="angles" />
+          <NavigationProperty Name="angles1" Relationship="Self.FK_angles_segments1" FromRole="segments" ToRole="angles" />
+          <NavigationProperty Name="Relations" Relationship="Self.FK_Relations_segments" FromRole="segments" ToRole="Relations" />
+        </EntityType>
+        <Association Name="FK_angles_segments">
+          <End Role="segments" Type="Self.segments" Multiplicity="1" />
+          <End Role="angles" Type="Self.angles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="segments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="angles">
+              <PropertyRef Name="segment1" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_angles_segments1">
+          <End Role="segments" Type="Self.segments" Multiplicity="1" />
+          <End Role="angles" Type="Self.angles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="segments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="angles">
+              <PropertyRef Name="segment2" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Relations_segments">
+          <End Role="segments" Type="Self.segments" Multiplicity="0..1" />
+          <End Role="Relations" Type="Self.Relations" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="segments">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Relations">
+              <PropertyRef Name="segment_ID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="TRPOPREntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="angles" EntityType="Self.angles" />
+          <EntitySet Name="Relations" EntityType="Self.Relations" />
+          <EntitySet Name="segments" EntityType="Self.segments" />
+          <AssociationSet Name="FK_angles_segments" Association="Self.FK_angles_segments">
+            <End Role="segments" EntitySet="segments" />
+            <End Role="angles" EntitySet="angles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_angles_segments1" Association="Self.FK_angles_segments1">
+            <End Role="segments" EntitySet="segments" />
+            <End Role="angles" EntitySet="angles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Relations_segments" Association="Self.FK_Relations_segments">
+            <End Role="segments" EntitySet="segments" />
+            <End Role="Relations" EntitySet="Relations" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище TRPOPRModelContainer" CdmEntityContainer="TRPOPREntities">
+          <EntitySetMapping Name="angles">
+            <EntityTypeMapping TypeName="TRPOPRModel.angles">
+              <MappingFragment StoreEntitySet="angles">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="segment1" ColumnName="segment1" />
+                <ScalarProperty Name="segment2" ColumnName="segment2" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Relations">
+            <EntityTypeMapping TypeName="TRPOPRModel.Relations">
+              <MappingFragment StoreEntitySet="Relations">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="segment_ID" ColumnName="segment_ID" />
+                <ScalarProperty Name="relation1" ColumnName="relation1" />
+                <ScalarProperty Name="relation2" ColumnName="relation2" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="segments">
+            <EntityTypeMapping TypeName="TRPOPRModel.segments">
+              <MappingFragment StoreEntitySet="segments">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="x1" ColumnName="x1" />
+                <ScalarProperty Name="x2" ColumnName="x2" />
+                <ScalarProperty Name="y1" ColumnName="y1" />
+                <ScalarProperty Name="y2" ColumnName="y2" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

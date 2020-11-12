@@ -15,7 +15,7 @@ namespace WpfApp2
 {
     public partial class graphWindow : Form
     {
-        TRPOPREntities1 db = new TRPOPREntities1();
+        public TRPOPREntities1 db = new TRPOPREntities1();
         
         public graphWindow()
         {
@@ -91,7 +91,7 @@ namespace WpfApp2
             chart.Series.Add(new Series("Points"));
             foreach (var rel in db.Relations)
             {
-                var seg = db.segments.Where(w => w.id == rel.segment_ID).FirstOrDefault<segments>();
+                
 
 
 
@@ -106,8 +106,8 @@ namespace WpfApp2
 
                 chart.Series["Points"].ChartArea = "Default";
                 chart.Series["Points"].ChartType = SeriesChartType.Point;
-                XData.Add(Reletion(rel, seg, "x"));
-                YData.Add(Reletion(rel, seg, "y"));
+                XData.Add(Reletion(rel, "x"));
+                YData.Add(Reletion(rel, "y"));
                 chart.Series["Points"].Points.DataBindXY(XData, YData);
             }
 
@@ -135,8 +135,9 @@ namespace WpfApp2
 
         }
         //точка соотношения
-        public double Reletion(Relations rel, segments seg, string k)
+        public double Reletion(Relations rel, string k)
         {
+            var seg = db.segments.Where(w => w.id == rel.segment_ID).FirstOrDefault<segments>();
             double relation = Convert.ToDouble(Convert.ToDouble(rel.relation1) / Convert.ToDouble(rel.relation2));
             double XM = Convert.ToDouble(Convert.ToDouble(seg.x1) + relation * Convert.ToDouble(seg.x2)) / (1 + relation);
             double YM = Convert.ToDouble(Convert.ToDouble(seg.y1) + relation * Convert.ToDouble(seg.y2)) / (1 + relation);
